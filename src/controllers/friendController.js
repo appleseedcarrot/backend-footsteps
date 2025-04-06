@@ -63,28 +63,8 @@ const friendController = {
   },
 
   async getFriendList(req, res) {
-    const token = req.headers.authorization?.split(' ')[1];
-  
-    const {
-      data: { user },
-      error: supaError,
-    } = await supabase.auth.getUser(token);
-  
-    if (supaError || !user) {
-      return res.status(401).json({ error: 'Invalid or expired token' });
-    }
-  
-    const email = user.email;
-  
-    const { data: appUser, error: userError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', email)
-      .single();
-  
-    if (userError || !appUser) {
-      return res.status(404).json({ error: 'User not found in app database' });
-    }
+    const userId = req.user.id;
+    console.log(userId)
   
     const { data: friends, error: friendError } = await supabase
       .from('friends')
@@ -96,7 +76,7 @@ const friendController = {
         requester:user_id (username, email),
         recipient:friend_id (username, email)
       `)
-      .or(`user_id.eq.${appUser.id},friend_id.eq.${appUser.id}`);
+      .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
 
     console.log(friends);
   

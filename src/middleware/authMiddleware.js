@@ -22,7 +22,13 @@ const authMiddleware = async (req, res, next) => {
         .json({ error: 'Invalid or expired session token' });
     }
 
-    req.user = user;
+    const { data: appUser } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', user.email)
+      .single();
+
+    req.user = appUser;
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
