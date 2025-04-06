@@ -25,16 +25,19 @@ const jumpscareController = {
 
   async getPendingJumpscares(req, res) {
     const userId = req.user.id;
+
+    const tenSecondsAgo = new Date(Date.now() - 10000).toISOString();
     
     try {
       const { data, error: fetchError } = await supabase
       .from('jumpscares')
       .select('*')
       .eq('recipient_id', userId)
-      .gt('timestamp', new Date(Date.now() - 10000)) // past 10 sec
+      .gt('timestamp', tenSecondsAgo) // past 10 sec
       .order('timestamp', { ascending: true })
       .limit(1)
-      .single()
+
+      console.log(data);
   
       if (fetchError) return res.status(500).json({ error: 'Failed to fetch' });
       res.json(data);
