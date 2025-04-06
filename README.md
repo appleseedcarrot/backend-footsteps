@@ -1,6 +1,6 @@
-# Backend Template
+# snitch backend
 
-_2025 Discover Program Project Templates_
+_Starter Code: 2025 Discover Program Project Templates_
 
 This template was created by the DISC tech leads of 2024-2025:
 
