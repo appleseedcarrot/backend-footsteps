@@ -174,7 +174,6 @@ const authController = {
   async ping(req, res) {
     const userId = req.user.id;
 
-    console.log('userid:', userId);
     const { error } = await supabase
       .from('users')
       .update({ last_seen: new Date().toISOString() })

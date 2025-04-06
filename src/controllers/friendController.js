@@ -36,6 +36,8 @@ const friendController = {
     const userId = req.user.id;
     const { friendId } = req.body;
 
+    console.log(friendId);
+
     const { error } = await supabase
       .from('friends')
       .update({ status: 'accepted' })
@@ -64,7 +66,6 @@ const friendController = {
 
   async getFriendList(req, res) {
     const userId = req.user.id;
-    console.log(userId)
   
     const { data: friends, error: friendError } = await supabase
       .from('friends')
