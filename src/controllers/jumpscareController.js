@@ -25,26 +25,32 @@ const jumpscareController = {
 
   async getPendingJumpscares(req, res) {
     const userId = req.user.id;
-
-    const tenSecondsAgo = new Date(Date.now() - 10000).toISOString();
-    
-    try {
-      const { data, error: fetchError } = await supabase
-      .from('jumpscares')
-      .select('*')
-      .eq('recipient_id', userId)
-      .gt('timestamp', tenSecondsAgo) // past 10 sec
-      .order('timestamp', { ascending: true })
-      .limit(1)
-
-      console.log(data);
+    const tenSecondsAgo = new Date(Date.now() - 2000).toISOString(); // last 2s window
   
-      if (fetchError) return res.status(500).json({ error: 'Failed to fetch' });
-      res.json(data);
-    }
-    catch (err) {
+    try {
+      const { data: pendingScare, error } = await supabase
+        .from('jumpscares')
+        .select('*')
+        .eq('recipient_id', userId)
+        .eq('result', 'pending') // only fetch if not already marked
+        .gt('timestamp', tenSecondsAgo)
+        .order('timestamp', { ascending: true })
+        .limit(1)
+      
+      console.log(pendingScare);
+      if (error) return res.status(500).json({ error: 'Failed to fetch jumpscare' });
+      if (pendingScare.length <= 0) console.log('return'); 
+      // return res.status(200).json(null);
+
+      await supabase
+        .from('jumpscares')
+        .update({ result: 'received' })
+        .eq('id', pendingScare.id);
+  
+      res.json(pendingScare);
+    } catch (err) {
       console.error('jumpscare retrieve failed', err);
-      res.status(404).json({ error: 'Jumpscare getting failed' });
+      res.status(500).json({ error: 'Jumpscare retrieval failed' });
     }
   }
 };
