@@ -63,21 +63,49 @@ const friendController = {
   },
 
   async getFriendList(req, res) {
-    const userId = req.user.id;
-
-    console.log("grabbing friend's list with userid: ", userId);
-
-    const { data, error } = await supabase
+    const token = req.headers.authorization?.split(' ')[1];
+  
+    const {
+      data: { user },
+      error: supaError,
+    } = await supabase.auth.getUser(token);
+  
+    if (supaError || !user) {
+      return res.status(401).json({ error: 'Invalid or expired token' });
+    }
+  
+    const email = user.email;
+  
+    const { data: appUser, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
+  
+    if (userError || !appUser) {
+      return res.status(404).json({ error: 'User not found in app database' });
+    }
+  
+    const { data: friends, error: friendError } = await supabase
       .from('friends')
-      .select(
-        `id, friend_id, status, users:friend_id (username, email)`
-      )
-      .eq('user_id', userId);
+      .select(`
+        id,
+        status,
+        user_id,
+        friend_id,
+        requester:user_id (username, email),
+        recipient:friend_id (username, email)
+      `)
+      .or(`user_id.eq.${appUser.id},friend_id.eq.${appUser.id}`);
 
-    if (error) return res.status(400).json({ error: error.message });
-
-    res.json(data);
-  },
-};
+    console.log(friends);
+  
+    if (friendError) {
+      return res.status(500).json({ error: 'Failed to fetch friends' });
+    }
+  
+    res.status(200).json(friends);
+  }
+}
 
 module.exports = friendController;

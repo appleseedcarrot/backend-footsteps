@@ -91,8 +91,6 @@ const authController = {
       const token =
         req.cookies.session || req.headers.authorization?.split(' ')[1];
 
-      console.log('GetMe called with token:', token ? 'present' : 'missing');
-
       if (!token) {
         return res.status(401).json({ error: 'Not authenticated' });
       }
@@ -101,8 +99,6 @@ const authController = {
         data: { user },
         error: userError,
       } = await supabase.auth.getUser(token);
-
-      console.log('GetMe Supabase auth result:', { user, error: userError });
 
       if (userError || !user) {
         return res.status(401).json({ error: 'Authentication failed' });
@@ -113,8 +109,6 @@ const authController = {
         .select('id, username, email, firstname, lastname')
         .eq('email', user.email)
         .single();
-
-      console.log('GetMe database query result:', { userData, error: dbError });
 
       if (userData && !dbError) {
         return res.json(userData);
