@@ -74,12 +74,10 @@ const friendController = {
         status,
         user_id,
         friend_id,
-        requester:user_id (username, email),
-        recipient:friend_id (username, email)
+        requester:user_id (username, email, last_seen),
+        recipient:friend_id (username, email, last_seen)
       `)
       .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
-
-    console.log(friends);
   
     if (friendError) {
       return res.status(500).json({ error: 'Failed to fetch friends' });
