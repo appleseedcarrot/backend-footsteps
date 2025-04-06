@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const friendRoutes = require('./routes/friendRoutes');
+const jumpscareRoutes = require('./routes/jumpscareRoutes');
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoutes);
 app.use('/friends', friendRoutes);
+app.use('/jumpscare', jumpscareRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
