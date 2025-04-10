@@ -4,6 +4,5 @@ const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.post('/send', authMiddleware, jumpscareController.sendJumpscare);
-router.get('/', authMiddleware, jumpscareController.getPendingJumpscares);
 
 module.exports = router;

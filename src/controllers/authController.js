@@ -67,7 +67,6 @@ const authController = {
           error: 'Invalid credentials',
         });
       }
-      console.log('Got data', data);
       res.cookie('session', data.session.access_token, {
         httpOnly: true,
         secure: true,
